@@ -6,6 +6,7 @@ import {
     useCreateOwner,
     useAdoptPet
 } from '../api/generated/api';
+import ScenarioBar from './ScenarioBar';
 
 export default function Dashboard() {
     // 1. Fetching current data state from MSW (backed by localStorage)
@@ -42,7 +43,7 @@ export default function Dashboard() {
         });
 
         setPetName('');
-        refetchPets(); // Refresh the grid state
+        await refetchPets(); // Wait for the grid state to refresh
         setModalMessage(`Successfully added animal record: ${petName}`);
     };
 
@@ -55,7 +56,7 @@ export default function Dashboard() {
         });
 
         setOwnerName('');
-        refetchOwners(); // Refresh the grid state
+        await refetchOwners(); // Wait for the grid state to refresh
         setModalMessage(`Successfully added human record: ${ownerName}`);
     };
 
@@ -79,17 +80,15 @@ export default function Dashboard() {
         // Reset selection and pull pristine data reflecting the new foreign keys
         setSelectedOwnerId('');
         setSelectedPetId('');
-        refetchOwners();
-        refetchPets();
+        await Promise.all([refetchOwners(), refetchPets()]);
         setModalMessage(`Successfully linked owner ${linkedOwnerName} to pet ${linkedPetName}!`);
     };
 
-    const handleHardReset = () => {
+    const handleHardReset = async () => {
         // Calling the break-glass utility injected into the window context in browser.ts
         if ((window as any).dbService) {
             (window as any).dbService.purgeAndReset();
-            refetchPets();
-            refetchOwners();
+            await Promise.all([refetchPets(), refetchOwners()]);
             alert('Database purged and reset to standard fallback seed data!');
         }
     };
@@ -116,6 +115,14 @@ export default function Dashboard() {
                     Reset LocalStorage DB
                 </button>
             </header>
+
+            {/* --- SCENARIO BAR --- */}
+            <ScenarioBar
+                onActionComplete={setModalMessage}
+                onRefetchData={async () => {
+                    await Promise.all([refetchPets(), refetchOwners()]);
+                }}
+            />
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
 

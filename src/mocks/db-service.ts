@@ -1,6 +1,6 @@
 // src/mocks/db-service.ts
-import { getGetPetsResponseMock } from '../api/generated/api.msw';
 import type { Pet, Owner } from '../api/generated/model';
+import { SCENARIOS } from './scenarios';
 
 const STORAGE_KEY = 'MSW_DATABASE_V1';
 
@@ -38,16 +38,33 @@ class MockDBService {
      * Leverages Orval's mock generators to establish a predictable, type-safe initial state.
      */
     private seedFallbackData(): void {
-        const initialSeed: DatabaseSchema = {
-            // Seed 5 realistic pets from your contract
-            pets: Array.from({ length: 5 }, () => getGetPetsResponseMock()).flat(),
-            owners: [
-                { id: 'owner-1', name: 'Alice Smith', petId: undefined },
-                { id: 'owner-2', name: 'Bob Jones', petId: undefined }
-            ]
-        };
+        this.loadScenario('random');
+    }
 
-        this.saveData(initialSeed);
+    /**
+     * SCENARIO ENGINE:
+     * Wipes current state and loads specific predetermined scenarios for testing.
+     */
+    public loadScenario(scenarioId: string): void {
+        const scenario = SCENARIOS[scenarioId] || SCENARIOS['random'];
+        this.saveData(scenario.getData());
+    }
+
+    /**
+     * SCENARIO ENGINE (ADDITIVE):
+     * Keeps existing state and injects the scenario data on top of it.
+     */
+    public appendScenario(scenarioId: string): void {
+        const currentData = this.getData();
+        const scenario = SCENARIOS[scenarioId];
+
+        if (!scenario) return;
+
+        const newData = scenario.getData();
+        currentData.pets.push(...newData.pets);
+        currentData.owners.push(...newData.owners);
+
+        this.saveData(currentData);
     }
 
     // --- CORE DATABASE UTILITIES (Atomic Transactions) ---
@@ -121,9 +138,9 @@ class MockDBService {
      * SANITY UTILITY:
      * Allows manual triggers to completely purge testing states and re-seed clean configurations.
      */
-    public purgeAndReset(): void {
+    public purgeAndReset(scenarioId: string = 'random'): void {
         localStorage.removeItem(STORAGE_KEY);
-        this.seedFallbackData();
+        this.loadScenario(scenarioId);
     }
 }
 
