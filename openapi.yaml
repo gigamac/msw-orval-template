@@ -1,0 +1,109 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Swagger Petstore (Relational Stateful Template)
+  license:
+    name: MIT
+paths:
+  /pets:
+    get:
+      summary: List all pets
+      operationId: getPets
+      responses:
+        '200':
+          description: A paged array of pets
+          content:
+            application/json:    
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+    post:
+      summary: Create a pet
+      operationId: createPet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '201':
+          description: Null response
+  /owners:
+    get:
+      summary: List all pet owners
+      operationId: getOwners
+      responses:
+        '200':
+          description: A list of owners
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Owner'
+    post:
+      summary: Create an owner and optionally link to a pet
+      operationId: createOwner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Owner'
+      responses:
+        '201':
+          description: Owner created successfully
+  /adopt:
+    post:
+      summary: Associate a pet with an owner
+      operationId: adoptPet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ownerId
+                - petId
+              properties:
+                ownerId:
+                  type: string
+                petId:
+                  type: integer
+      responses:
+        '200':
+          description: Successfully adopted
+        '404':
+          description: Owner or Pet not found
+components:
+  schemas:
+    Pet:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        tag:
+          type: string
+    Owner:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        petId:
+          type: integer
+          format: int64
+          description: Relational foreign key linking this owner to their Pet's ID
