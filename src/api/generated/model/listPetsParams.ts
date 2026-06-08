@@ -6,9 +6,9 @@
  */
 
 export type ListPetsParams = {
-/**
- * How many items to return at one time (max 100)
- * @maximum 100
- */
-limit?: number;
+  /**
+   * How many items to return at one time (max 100)
+   * @maximum 100
+   */
+  limit?: number;
 };

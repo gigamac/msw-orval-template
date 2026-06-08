@@ -4,86 +4,150 @@
  * Swagger Petstore (Relational Stateful Template)
  * OpenAPI spec version: 1.0.0
  */
-import {
-  faker
-} from '@faker-js/faker';
+import { faker } from "@faker-js/faker";
 
-import {
-  HttpResponse,
-  http
-} from 'msw';
-import type {
-  RequestHandlerOptions
-} from 'msw';
+import { HttpResponse, http } from "msw";
+import type { RequestHandlerOptions } from "msw";
 
-import type {
-  Owner,
-  Pet
-} from './model';
+import type { Owner, Pet } from "./model";
 
+export const getGetPetsResponseMock = (): Pet[] =>
+  Array.from(
+    { length: faker.number.int({ min: 1, max: 10 }) },
+    (_, i) => i + 1,
+  ).map(() => ({
+    id: faker.number.int(),
+    name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    tag: faker.helpers.arrayElement([
+      faker.string.alpha({ length: { min: 10, max: 20 } }),
+      undefined,
+    ]),
+  }));
 
-export const getGetPetsResponseMock = (): Pet[] => (Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({id: faker.number.int(), name: faker.string.alpha({length: {min: 10, max: 20}}), tag: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})))
+export const getGetOwnersResponseMock = (): Owner[] =>
+  Array.from(
+    { length: faker.number.int({ min: 1, max: 10 }) },
+    (_, i) => i + 1,
+  ).map(() => ({
+    id: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    petId: faker.helpers.arrayElement([faker.number.int(), undefined]),
+  }));
 
-export const getGetOwnersResponseMock = (): Owner[] => (Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), petId: faker.helpers.arrayElement([faker.number.int(), undefined])})))
+export const getGetPetsMockHandler = (
+  overrideResponse?:
+    | Pet[]
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<Pet[]> | Pet[]),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    "*/pets",
+    async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+      return HttpResponse.json(
+        overrideResponse !== undefined
+          ? typeof overrideResponse === "function"
+            ? await overrideResponse(info)
+            : overrideResponse
+          : getGetPetsResponseMock(),
+        { status: 200 },
+      );
+    },
+    options,
+  );
+};
 
+export const getCreatePetMockHandler = (
+  overrideResponse?:
+    | void
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<void> | void),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    "*/pets",
+    async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+      if (typeof overrideResponse === "function") {
+        await overrideResponse(info);
+      }
 
-export const getGetPetsMockHandler = (overrideResponse?: Pet[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Pet[]> | Pet[]), options?: RequestHandlerOptions) => {
-  return http.get('*/pets', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+      return new HttpResponse(null, { status: 201 });
+    },
+    options,
+  );
+};
 
+export const getGetOwnersMockHandler = (
+  overrideResponse?:
+    | Owner[]
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<Owner[]> | Owner[]),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    "*/owners",
+    async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+      return HttpResponse.json(
+        overrideResponse !== undefined
+          ? typeof overrideResponse === "function"
+            ? await overrideResponse(info)
+            : overrideResponse
+          : getGetOwnersResponseMock(),
+        { status: 200 },
+      );
+    },
+    options,
+  );
+};
 
-    return HttpResponse.json(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetPetsResponseMock(),
-      { status: 200
-      })
-  }, options)
-}
+export const getCreateOwnerMockHandler = (
+  overrideResponse?:
+    | void
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<void> | void),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    "*/owners",
+    async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+      if (typeof overrideResponse === "function") {
+        await overrideResponse(info);
+      }
 
-export const getCreatePetMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
-  return http.post('*/pets', async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
-  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+      return new HttpResponse(null, { status: 201 });
+    },
+    options,
+  );
+};
 
-    return new HttpResponse(null,
-      { status: 201
-      })
-  }, options)
-}
+export const getAdoptPetMockHandler = (
+  overrideResponse?:
+    | void
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<void> | void),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    "*/adopt",
+    async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+      if (typeof overrideResponse === "function") {
+        await overrideResponse(info);
+      }
 
-export const getGetOwnersMockHandler = (overrideResponse?: Owner[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Owner[]> | Owner[]), options?: RequestHandlerOptions) => {
-  return http.get('*/owners', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
-
-
-    return HttpResponse.json(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetOwnersResponseMock(),
-      { status: 200
-      })
-  }, options)
-}
-
-export const getCreateOwnerMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
-  return http.post('*/owners', async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
-  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
-
-    return new HttpResponse(null,
-      { status: 201
-      })
-  }, options)
-}
-
-export const getAdoptPetMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
-  return http.post('*/adopt', async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
-  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
-
-    return new HttpResponse(null,
-      { status: 200
-      })
-  }, options)
-}
+      return new HttpResponse(null, { status: 200 });
+    },
+    options,
+  );
+};
 export const getSwaggerPetstoreRelationalStatefulTemplateMock = () => [
   getGetPetsMockHandler(),
   getCreatePetMockHandler(),
   getGetOwnersMockHandler(),
   getCreateOwnerMockHandler(),
-  getAdoptPetMockHandler()
-]
+  getAdoptPetMockHandler(),
+];

@@ -5,6 +5,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export * from './adoptPetBody';
-export * from './owner';
-export * from './pet';
+export * from "./adoptPetBody";
+export * from "./owner";
+export * from "./pet";
