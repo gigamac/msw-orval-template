@@ -43,7 +43,7 @@ To add a new scenario, simply add an entry to the `SCENARIOS` object:
     icon: '🐶',
     description: 'An owner with 10 dogs',
     getData: () => ({
-        pets: [...Array(10).fill({ tag: 'Cat' })],
+        pets: [...Array(10).fill({ tag: 'Dog' })],
         owners: [{ id: 'dogsbody-lady', name: 'Dilbert' }]
     })
 }
