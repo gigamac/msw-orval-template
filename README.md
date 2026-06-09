@@ -33,6 +33,27 @@ Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 *This command relies on an `orval.config.ts` (or similar) configuration to parse your schema and output the generated files into `src/api/generated/`.*
 
+### Orval Configuration Setup
+
+The code generation behavior is controlled by `orval.config.ts`. By default, this template is set up to read from a local `./openapi.yaml` file. However, in typical real-world environments, you will likely want to point this directly to your backend service or a schema repository.
+
+You can change the `input.target` in `orval.config.ts` to accommodate several different sources:
+
+**1. Local File (Default)**
+```typescript
+target: './openapi.yaml',
+```
+
+**2. Live Swagger/OpenAPI URL**
+```typescript
+target: 'https://api.yourproject.com/swagger/v1/swagger.json',
+```
+
+**3. Remote Repository (e.g., GitHub Raw URL)**
+```typescript
+target: 'https://raw.githubusercontent.com/your-org/backend-repo/main/openapi.yaml',
+```
+
 ### `npm run build`
 ## 🌐 Mock Service Worker (MSW)
 

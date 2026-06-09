@@ -4,7 +4,7 @@ import { defineConfig } from 'orval';
 export default defineConfig({
     petstore: {
         input: {
-            // 1. Direct Orval to look at the raw online GitHub file
+            // Provide the path to your OpenAPI spec (local file, Swagger URL, or raw GitHub URL)
             target: './openapi.yaml',
         },
         output: {
