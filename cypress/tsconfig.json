@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "lib": [
+            "dom",
+            "esnext"
+        ],
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "types": [
+            "cypress"
+        ]
+    },
+    "include": [
+        "**/*.ts"
+    ]
+}
