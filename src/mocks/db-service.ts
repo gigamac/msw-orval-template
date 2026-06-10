@@ -12,8 +12,11 @@ interface DatabaseSchema {
 
 class MockDBService {
     constructor() {
-        // Automatically runs the moment this service is imported
-        this.initializeDatabase();
+        // Automatically runs the moment this service is imported, but only in development
+        const isDevelopment = process.env.NODE_ENV === 'development';
+        if (isDevelopment) {
+            this.initializeDatabase();
+        }
     }
 
     /**

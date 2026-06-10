@@ -4,11 +4,13 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 async function prepareApp() {
-  // Only start mocks during local development
-  if (process.env.NODE_ENV === 'development') {
+  // Start mocks strictly during local development
+  if (isDevelopment) {
     const { worker } = await import('./mocks/browser');
-    
+
     // Start the worker and wait until it is active
     await worker.start({
       onUnhandledRequest: 'bypass', // Don't warn about assets or styles

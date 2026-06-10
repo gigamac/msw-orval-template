@@ -22,6 +22,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "serve:prod": "npm run build && npx serve -s build",
     "test": "react-scripts test",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",

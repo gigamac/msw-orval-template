@@ -4,8 +4,10 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 async function prepareApp() {
-  if (process.env.NODE_ENV === 'development') {
+  if (isDevelopment) {
     const { worker } = await import('./mocks/browser');
     await worker.start({ onUnhandledRequest: 'bypass' });
   }

@@ -8,6 +8,9 @@ import {
 } from '../api/generated/api';
 import ScenarioBar from './ScenarioBar';
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+const showScenarioBar = process.env.REACT_APP_SHOW_SCENARIO_BAR !== 'false';
+
 export default function Dashboard() {
     // 1. Fetching current data state from MSW (backed by localStorage)
     const { data: petsResponse, refetch: refetchPets, isLoading: petsLoading } = useGetPets();
@@ -117,12 +120,14 @@ export default function Dashboard() {
             </header>
 
             {/* --- SCENARIO BAR --- */}
-            <ScenarioBar
-                onActionComplete={setModalMessage}
-                onRefetchData={async () => {
-                    await Promise.all([refetchPets(), refetchOwners()]);
-                }}
-            />
+            {isDevelopment && showScenarioBar && (
+                <ScenarioBar
+                    onActionComplete={setModalMessage}
+                    onRefetchData={async () => {
+                        await Promise.all([refetchPets(), refetchOwners()]);
+                    }}
+                />
+            )}
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
 
