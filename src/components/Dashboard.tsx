@@ -177,6 +177,37 @@ const Dashboard = () => {
                     </ul>
                 </div>
             </div>
+
+            <div style={{ marginTop: '20px', padding: '15px', border: '1px solid #ccc', borderRadius: '4px', background: '#fff' }}>
+                <h3>Relationships Table</h3>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <thead>
+                        <tr style={{ backgroundColor: '#f9f9f9' }}>
+                            <th style={{ padding: '8px', borderBottom: '2px solid #ccc' }}>Human Record (Owner)</th>
+                            <th style={{ padding: '8px', borderBottom: '2px solid #ccc' }}>Animal Record (Pet)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {owners.length === 0 ? (
+                            <tr>
+                                <td colSpan={2} style={{ padding: '15px', textAlign: 'center', color: '#999' }}>No records found.</td>
+                            </tr>
+                        ) : (
+                            owners.map((owner) => {
+                                const linkedPet = pets.find((p) => p.id === owner.petId);
+                                return (
+                                    <tr key={owner.id}>
+                                        <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>{owner.name}</td>
+                                        <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                                            {linkedPet ? `${linkedPet.name} (ID: ${linkedPet.id})` : <span style={{ color: '#999' }}><em>None</em></span>}
+                                        </td>
+                                    </tr>
+                                );
+                            })
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };
