@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export * from "./adoptPetDto";
-export * from "./owner";
-export * from "./pet";
+export interface AdoptPetDto {
+  ownerId: string;
+  petId: number;
+}

@@ -20,37 +20,18 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { AdoptPetBody, Owner, Pet } from "./model";
+import axios from "axios";
+import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
-export type getPetsResponse200 = {
-  data: Pet[];
-  status: 200;
-};
-
-export type getPetsResponseSuccess = getPetsResponse200 & {
-  headers: Headers;
-};
-export type getPetsResponse = getPetsResponseSuccess;
-
-export const getGetPetsUrl = () => {
-  return `/pets`;
-};
+import type { AdoptPetDto, Owner, Pet } from "./model";
 
 /**
  * @summary List all pets
  */
-export const getPets = async (
-  options?: RequestInit,
-): Promise<getPetsResponse> => {
-  const res = await fetch(getGetPetsUrl(), {
-    ...options,
-    method: "GET",
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: getPetsResponse["data"] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as getPetsResponse;
+export const getPets = (
+  options?: AxiosRequestConfig,
+): Promise<AxiosResponse<Pet[]>> => {
+  return axios.get(`/pets`, options);
 };
 
 export const getGetPetsQueryKey = () => {
@@ -59,20 +40,20 @@ export const getGetPetsQueryKey = () => {
 
 export const getGetPetsQueryOptions = <
   TData = Awaited<ReturnType<typeof getPets>>,
-  TError = unknown,
+  TError = AxiosError<unknown>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<Awaited<ReturnType<typeof getPets>>, TError, TData>
   >;
-  fetch?: RequestInit;
+  axios?: AxiosRequestConfig;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getGetPetsQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getPets>>> = ({
     signal,
-  }) => getPets({ signal, ...fetchOptions });
+  }) => getPets({ signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getPets>>,
@@ -84,11 +65,11 @@ export const getGetPetsQueryOptions = <
 export type GetPetsQueryResult = NonNullable<
   Awaited<ReturnType<typeof getPets>>
 >;
-export type GetPetsQueryError = unknown;
+export type GetPetsQueryError = AxiosError<unknown>;
 
 export function useGetPets<
   TData = Awaited<ReturnType<typeof getPets>>,
-  TError = unknown,
+  TError = AxiosError<unknown>,
 >(
   options: {
     query: Partial<
@@ -102,7 +83,7 @@ export function useGetPets<
         >,
         "initialData"
       >;
-    fetch?: RequestInit;
+    axios?: AxiosRequestConfig;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -110,7 +91,7 @@ export function useGetPets<
 };
 export function useGetPets<
   TData = Awaited<ReturnType<typeof getPets>>,
-  TError = unknown,
+  TError = AxiosError<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -124,7 +105,7 @@ export function useGetPets<
         >,
         "initialData"
       >;
-    fetch?: RequestInit;
+    axios?: AxiosRequestConfig;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -132,13 +113,13 @@ export function useGetPets<
 };
 export function useGetPets<
   TData = Awaited<ReturnType<typeof getPets>>,
-  TError = unknown,
+  TError = AxiosError<unknown>,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getPets>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    axios?: AxiosRequestConfig;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -150,13 +131,13 @@ export function useGetPets<
 
 export function useGetPets<
   TData = Awaited<ReturnType<typeof getPets>>,
-  TError = unknown,
+  TError = AxiosError<unknown>,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getPets>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    axios?: AxiosRequestConfig;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -172,46 +153,18 @@ export function useGetPets<
   return { ...query, queryKey: queryOptions.queryKey };
 }
 
-export type createPetResponse201 = {
-  data: void;
-  status: 201;
-};
-
-export type createPetResponseSuccess = createPetResponse201 & {
-  headers: Headers;
-};
-export type createPetResponse = createPetResponseSuccess;
-
-export const getCreatePetUrl = () => {
-  return `/pets`;
-};
-
 /**
  * @summary Create a pet
  */
-export const createPet = async (
+export const createPet = (
   pet: Pet,
-  options?: RequestInit,
-): Promise<createPetResponse> => {
-  const res = await fetch(getCreatePetUrl(), {
-    ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(pet),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: createPetResponse["data"] = body ? JSON.parse(body) : undefined;
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as createPetResponse;
+  options?: AxiosRequestConfig,
+): Promise<AxiosResponse<void>> => {
+  return axios.post(`/pets`, pet, options);
 };
 
 export const getCreatePetMutationOptions = <
-  TError = unknown,
+  TError = AxiosError<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -220,7 +173,7 @@ export const getCreatePetMutationOptions = <
     { data: Pet },
     TContext
   >;
-  fetch?: RequestInit;
+  axios?: AxiosRequestConfig;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof createPet>>,
   TError,
@@ -228,13 +181,13 @@ export const getCreatePetMutationOptions = <
   TContext
 > => {
   const mutationKey = ["createPet"];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, axios: axiosOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, axios: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof createPet>>,
@@ -242,7 +195,7 @@ export const getCreatePetMutationOptions = <
   > = (props) => {
     const { data } = props ?? {};
 
-    return createPet(data, fetchOptions);
+    return createPet(data, axiosOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -252,12 +205,12 @@ export type CreatePetMutationResult = NonNullable<
   Awaited<ReturnType<typeof createPet>>
 >;
 export type CreatePetMutationBody = Pet;
-export type CreatePetMutationError = unknown;
+export type CreatePetMutationError = AxiosError<unknown>;
 
 /**
  * @summary Create a pet
  */
-export const useCreatePet = <TError = unknown, TContext = unknown>(
+export const useCreatePet = <TError = AxiosError<unknown>, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof createPet>>,
@@ -265,7 +218,7 @@ export const useCreatePet = <TError = unknown, TContext = unknown>(
       { data: Pet },
       TContext
     >;
-    fetch?: RequestInit;
+    axios?: AxiosRequestConfig;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -277,39 +230,13 @@ export const useCreatePet = <TError = unknown, TContext = unknown>(
   return useMutation(getCreatePetMutationOptions(options), queryClient);
 };
 
-export type getOwnersResponse200 = {
-  data: Owner[];
-  status: 200;
-};
-
-export type getOwnersResponseSuccess = getOwnersResponse200 & {
-  headers: Headers;
-};
-export type getOwnersResponse = getOwnersResponseSuccess;
-
-export const getGetOwnersUrl = () => {
-  return `/owners`;
-};
-
 /**
  * @summary List all pet owners
  */
-export const getOwners = async (
-  options?: RequestInit,
-): Promise<getOwnersResponse> => {
-  const res = await fetch(getGetOwnersUrl(), {
-    ...options,
-    method: "GET",
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: getOwnersResponse["data"] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as getOwnersResponse;
+export const getOwners = (
+  options?: AxiosRequestConfig,
+): Promise<AxiosResponse<Owner[]>> => {
+  return axios.get(`/owners`, options);
 };
 
 export const getGetOwnersQueryKey = () => {
@@ -318,20 +245,20 @@ export const getGetOwnersQueryKey = () => {
 
 export const getGetOwnersQueryOptions = <
   TData = Awaited<ReturnType<typeof getOwners>>,
-  TError = unknown,
+  TError = AxiosError<unknown>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<Awaited<ReturnType<typeof getOwners>>, TError, TData>
   >;
-  fetch?: RequestInit;
+  axios?: AxiosRequestConfig;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getGetOwnersQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getOwners>>> = ({
     signal,
-  }) => getOwners({ signal, ...fetchOptions });
+  }) => getOwners({ signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getOwners>>,
@@ -343,11 +270,11 @@ export const getGetOwnersQueryOptions = <
 export type GetOwnersQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOwners>>
 >;
-export type GetOwnersQueryError = unknown;
+export type GetOwnersQueryError = AxiosError<unknown>;
 
 export function useGetOwners<
   TData = Awaited<ReturnType<typeof getOwners>>,
-  TError = unknown,
+  TError = AxiosError<unknown>,
 >(
   options: {
     query: Partial<
@@ -361,7 +288,7 @@ export function useGetOwners<
         >,
         "initialData"
       >;
-    fetch?: RequestInit;
+    axios?: AxiosRequestConfig;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -369,7 +296,7 @@ export function useGetOwners<
 };
 export function useGetOwners<
   TData = Awaited<ReturnType<typeof getOwners>>,
-  TError = unknown,
+  TError = AxiosError<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -383,7 +310,7 @@ export function useGetOwners<
         >,
         "initialData"
       >;
-    fetch?: RequestInit;
+    axios?: AxiosRequestConfig;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -391,13 +318,13 @@ export function useGetOwners<
 };
 export function useGetOwners<
   TData = Awaited<ReturnType<typeof getOwners>>,
-  TError = unknown,
+  TError = AxiosError<unknown>,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOwners>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    axios?: AxiosRequestConfig;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -409,13 +336,13 @@ export function useGetOwners<
 
 export function useGetOwners<
   TData = Awaited<ReturnType<typeof getOwners>>,
-  TError = unknown,
+  TError = AxiosError<unknown>,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOwners>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    axios?: AxiosRequestConfig;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -431,46 +358,18 @@ export function useGetOwners<
   return { ...query, queryKey: queryOptions.queryKey };
 }
 
-export type createOwnerResponse201 = {
-  data: void;
-  status: 201;
-};
-
-export type createOwnerResponseSuccess = createOwnerResponse201 & {
-  headers: Headers;
-};
-export type createOwnerResponse = createOwnerResponseSuccess;
-
-export const getCreateOwnerUrl = () => {
-  return `/owners`;
-};
-
 /**
  * @summary Create an owner and optionally link to a pet
  */
-export const createOwner = async (
+export const createOwner = (
   owner: Owner,
-  options?: RequestInit,
-): Promise<createOwnerResponse> => {
-  const res = await fetch(getCreateOwnerUrl(), {
-    ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(owner),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: createOwnerResponse["data"] = body ? JSON.parse(body) : undefined;
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as createOwnerResponse;
+  options?: AxiosRequestConfig,
+): Promise<AxiosResponse<void>> => {
+  return axios.post(`/owners`, owner, options);
 };
 
 export const getCreateOwnerMutationOptions = <
-  TError = unknown,
+  TError = AxiosError<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -479,7 +378,7 @@ export const getCreateOwnerMutationOptions = <
     { data: Owner },
     TContext
   >;
-  fetch?: RequestInit;
+  axios?: AxiosRequestConfig;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof createOwner>>,
   TError,
@@ -487,13 +386,13 @@ export const getCreateOwnerMutationOptions = <
   TContext
 > => {
   const mutationKey = ["createOwner"];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, axios: axiosOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, axios: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof createOwner>>,
@@ -501,7 +400,7 @@ export const getCreateOwnerMutationOptions = <
   > = (props) => {
     const { data } = props ?? {};
 
-    return createOwner(data, fetchOptions);
+    return createOwner(data, axiosOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -511,12 +410,15 @@ export type CreateOwnerMutationResult = NonNullable<
   Awaited<ReturnType<typeof createOwner>>
 >;
 export type CreateOwnerMutationBody = Owner;
-export type CreateOwnerMutationError = unknown;
+export type CreateOwnerMutationError = AxiosError<unknown>;
 
 /**
  * @summary Create an owner and optionally link to a pet
  */
-export const useCreateOwner = <TError = unknown, TContext = unknown>(
+export const useCreateOwner = <
+  TError = AxiosError<unknown>,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof createOwner>>,
@@ -524,7 +426,7 @@ export const useCreateOwner = <TError = unknown, TContext = unknown>(
       { data: Owner },
       TContext
     >;
-    fetch?: RequestInit;
+    axios?: AxiosRequestConfig;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
@@ -536,82 +438,49 @@ export const useCreateOwner = <TError = unknown, TContext = unknown>(
   return useMutation(getCreateOwnerMutationOptions(options), queryClient);
 };
 
-export type adoptPetResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type adoptPetResponse404 = {
-  data: void;
-  status: 404;
-};
-
-export type adoptPetResponseSuccess = adoptPetResponse200 & {
-  headers: Headers;
-};
-export type adoptPetResponseError = adoptPetResponse404 & {
-  headers: Headers;
-};
-
-export type adoptPetResponse = adoptPetResponseSuccess | adoptPetResponseError;
-
-export const getAdoptPetUrl = () => {
-  return `/adopt`;
-};
-
 /**
  * @summary Associate a pet with an owner
  */
-export const adoptPet = async (
-  adoptPetBody: AdoptPetBody,
-  options?: RequestInit,
-): Promise<adoptPetResponse> => {
-  const res = await fetch(getAdoptPetUrl(), {
-    ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(adoptPetBody),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: adoptPetResponse["data"] = body ? JSON.parse(body) : undefined;
-  return { data, status: res.status, headers: res.headers } as adoptPetResponse;
+export const adoptPet = (
+  adoptPetDto: AdoptPetDto,
+  options?: AxiosRequestConfig,
+): Promise<AxiosResponse<void>> => {
+  return axios.post(`/adopt`, adoptPetDto, options);
 };
 
 export const getAdoptPetMutationOptions = <
-  TError = void,
+  TError = AxiosError<void>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof adoptPet>>,
     TError,
-    { data: AdoptPetBody },
+    { data: AdoptPetDto },
     TContext
   >;
-  fetch?: RequestInit;
+  axios?: AxiosRequestConfig;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof adoptPet>>,
   TError,
-  { data: AdoptPetBody },
+  { data: AdoptPetDto },
   TContext
 > => {
   const mutationKey = ["adoptPet"];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, axios: axiosOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, axios: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof adoptPet>>,
-    { data: AdoptPetBody }
+    { data: AdoptPetDto }
   > = (props) => {
     const { data } = props ?? {};
 
-    return adoptPet(data, fetchOptions);
+    return adoptPet(data, axiosOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -620,27 +489,27 @@ export const getAdoptPetMutationOptions = <
 export type AdoptPetMutationResult = NonNullable<
   Awaited<ReturnType<typeof adoptPet>>
 >;
-export type AdoptPetMutationBody = AdoptPetBody;
-export type AdoptPetMutationError = void;
+export type AdoptPetMutationBody = AdoptPetDto;
+export type AdoptPetMutationError = AxiosError<void>;
 
 /**
  * @summary Associate a pet with an owner
  */
-export const useAdoptPet = <TError = void, TContext = unknown>(
+export const useAdoptPet = <TError = AxiosError<void>, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof adoptPet>>,
       TError,
-      { data: AdoptPetBody },
+      { data: AdoptPetDto },
       TContext
     >;
-    fetch?: RequestInit;
+    axios?: AxiosRequestConfig;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof adoptPet>>,
   TError,
-  { data: AdoptPetBody },
+  { data: AdoptPetDto },
   TContext
 > => {
   return useMutation(getAdoptPetMutationOptions(options), queryClient);

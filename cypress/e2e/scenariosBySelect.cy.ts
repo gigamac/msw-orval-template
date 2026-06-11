@@ -1,16 +1,7 @@
 /// <reference types="cypress" />
 
+import { closeSuccessModal } from "../support/modals";
 import { loadAndClose, injectAndClose } from "../support/uiScenarioLoaders";
-
-/**
- * Helper function to close a generic success modal after an action.
- * @param {string} expectedMessage The message to verify in the modal.
- */
-const closeSuccessModal = (expectedMessage: string) => {
-    cy.contains('Success!').should('be.visible');
-    cy.contains(expectedMessage).should('be.visible');
-    cy.contains('button', 'Close').click();
-};
 
 describe('Scenario Testing', () => {
     beforeEach(() => {
@@ -135,4 +126,5 @@ describe('Scenario Testing', () => {
             cy.contains(/Linked Pet ID: \d+/).should('exist');
         });
     });
+
 });
